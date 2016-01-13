@@ -1,6 +1,6 @@
 
 var xmax = 1000;
-var ymax = 750;
+var ymax = 600;
 var xmin = 0;
 var ymin = 0;
 
@@ -11,11 +11,12 @@ var yspeed = 0;
 var maxSpeed = 10;
 var gravity = .2;
 
-
 var upPressed = 0;
 var downPressed = 0;
 var leftPressed = 0;
 var rightPressed = 0;
+
+var platformArray = [[]]
 
 function slowDownX()
 {
@@ -79,9 +80,11 @@ function gameLoop()
     yspeed+=gravity
   if (leftPressed == 0 && rightPressed == 0)
      slowDownX();
+    
+    BIPlatform(document.getElementById("platform"));
 
- 
-  setTimeout("gameLoop()",10);
+    
+  setTimeout("gameLoop()",16 + (2/3));
 }
 
 function gravity() {
@@ -92,7 +95,7 @@ function gravity() {
 function keyDown(e)
 {
   var code = e.keyCode ? e.keyCode : e.which;
-  if (code == 38)
+  if (code == 38 || code == 32)
     upPressed = 1;
   if (code == 40)
     downPressed = 1;
@@ -107,7 +110,7 @@ function keyDown(e)
 function keyUp(e)
 {
   var code = e.keyCode ? e.keyCode : e.which;
-  if (code == 38)
+  if (code == 38 || code == 32)
     upPressed = 0;
   if (code == 40)
     downPressed = 0;
@@ -117,7 +120,52 @@ function keyUp(e)
     rightPressed = 0;
 }
 
+
+
 function picSwitch(b)  {
   var img = document.getElementById("character");
   img.src = b;
+}
+
+function getImgTop(img) {
+    var bodyRect = document.body.getBoundingClientRect();
+    elemRect = img.getBoundingClientRect();
+    offset   = elemRect.top - bodyRect.top;
+    return offset;
+    
+}
+
+function getImgLeft(img) {
+    var bodyRect = document.body.getBoundingClientRect();
+    elemRect = img.getBoundingClientRect();
+    offset   = elemRect.left - bodyRect.left;
+    return offset;
+    
+}
+
+function getImgWidth(img) {
+    var bodyRect = document.body.getBoundingClientRect();
+    elemRect = img.getBoundingClientRect();
+    return elemRect.width;
+    
+}
+
+
+function BIPlatform(platform) {
+    var left = getImgLeft(platform);
+    var right = left + getImgWidth(platform);
+    var height = getImgTop(platform) - 40;
+    if (xpos <= right && xpos >= left && ypos >= height && ypos <= height + 20) {
+         ypos = height; 
+       if(yspeed >= 0){
+        
+        yspeed -= yspeed;
+       }
+    }
+    
+}
+
+function CannonShot(player) {
+       
+    
 }
