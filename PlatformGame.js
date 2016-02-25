@@ -18,11 +18,6 @@ var rightPressed = 0;
 
 var character = new Image();
 
-function makeCharacter() {
-
-
-
-}
 
 function loadCanvas() {
   var canvas = document.getElementById('canvas');
@@ -30,6 +25,7 @@ function loadCanvas() {
   context.fillStyle = "#FF0000";
   context.rect(0, 0, 999, 600);
   context.stroke();
+  game();
 }
 
 function slowDownX()
