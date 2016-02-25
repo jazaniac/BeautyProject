@@ -16,7 +16,21 @@ var downPressed = 0;
 var leftPressed = 0;
 var rightPressed = 0;
 
-var platformArray = [[]]
+var character = new Image();
+
+function makeCharacter() {
+
+
+
+}
+
+function loadCanvas() {
+  var canvas = document.getElementById('canvas');
+  var context = canvas.getContext("2d");
+  context.fillStyle = "#FF0000";
+  context.rect(0, 0, 999, 600);
+  context.stroke();
+}
 
 function slowDownX()
 {
@@ -32,6 +46,13 @@ function slowDownY()
     yspeed = yspeed - 1;
   if (yspeed < 0)
     yspeed = yspeed + 1;
+}
+
+function game(){
+  var gamePos = 0;
+  var character = new Image();
+  character.src = "LuigiPic.png";
+  context.drawImage(character, xpos, ypos);
 }
 
 function gameLoop()

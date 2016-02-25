@@ -2,21 +2,23 @@
 
 <html>
     <head>
-    <title>MMO-ish thing</title>
+    <title>game</title>
     <meta name = "viewport" content="user-scalable = no">
     <script src="jquery-1.11.3.min.js"></script>
     <script src = "PlatformGame.js"></script>
     <link rel = "stylesheet" type = "text/css" href = "GamePage.css">
     
     </head>
-    <body onload = "gameLoop()" onkeydown = keyDown(event) onkeyup = keyUp(event)>
+
+    <body onload = 'loadCanvas()' style = 'text-align: left;'>
+    
         
-    
-        <img id = "character" src = "images/LuigiPic.png">
-    
-     `  <img id = "platform" src = "images/MarioPlatform.png">
-    
-        <img id = "shot" src = "images/GameCannonball.png">
+   <canvas id = 'canvas' width = '1000' height = '600'>Quit using such a jank-ass browser</canvas>
+    <canvas id = 'game' width = '61000' height = '600' style = 'display: none;'></canvas>
+
+        
+        
+   
     
     </body>
 </html>
