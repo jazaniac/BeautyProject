@@ -16,6 +16,9 @@ var downPressed = 0;
 var leftPressed = 0;
 var rightPressed = 0;
 
+var canvas;
+var context;
+
 
 var character = new Image();
 
@@ -23,8 +26,8 @@ var character = new Image();
 
 
 function loadCanvas() {
-  var canvas = document.getElementById('canvas');
-  var context = canvas.getContext("2d");
+  canvas = document.getElementById('canvas');
+  context = canvas.getContext("2d");
   context.rect(0, 0, 999, 600);
   context.stroke();
   game();
@@ -34,7 +37,13 @@ function game() {
   var gamePos = 0;
   var character = new Image();
   character.src = "images/LuigiPic.png";
-  context.drawImage(character, xpos, ypos, 100, 100);
+  character.onload = function() {
+    context.drawImage(character, xpos, ypos, 100, 100);
+  };
+
+
+
+
 
 }
 
