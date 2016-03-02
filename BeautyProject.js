@@ -1,5 +1,5 @@
 
-var xmax = 1000;
+var xmax = 500;
 var ymax = 600;
 var xmin = 0;
 var ymin = 0;
@@ -15,17 +15,19 @@ var upPressed = 0;
 var downPressed = 0;
 var leftPressed = 0;
 var rightPressed = 0;
+var escPressed = 0;
 
 var canvas;
 var context;
 
 
-var character = new Image();
+
 
 
 
 
 function loadCanvas() {
+  console.log("canvas loaded");
   canvas = document.getElementById('canvas');
   context = canvas.getContext("2d");
   context.rect(0, 0, 999, 600);
@@ -35,11 +37,14 @@ function loadCanvas() {
 
 function game() {
   var gamePos = 0;
-  var character = new Image();
-  character.src = "images/LuigiPic.png";
-  character.onload = function() {
-    context.drawImage(character, xpos, ypos, 100, 100);
+  var char = new Image();
+  char.src = "images/LuigiPic.png";
+
+  char.onload = function() {
+    context.drawImage(char, 100, 500, 100, 100);
   };
+  context.beginPath();
+  gameLoop();
 
 
 
@@ -67,7 +72,10 @@ function slowDownY()
 
 function gameLoop()
 {
- 
+  
+    var char = new Image();
+    char.src = "images/LuigiPic.png";
+
     xpos = xpos + xspeed;
     ypos = ypos + yspeed;
     
@@ -87,15 +95,8 @@ function gameLoop()
         xpos = xmin;
         xspeed -= xspeed;
     }
-    
- 
- 
-  
-    document.getElementById('character').style.left = xpos;
-    document.getElementById('character').style.top = ypos;
-
-  
-  if (upPressed == 1) {
+     if (upPressed == 1) {
+    console.log("pressed");
     if (yspeed==0){ yspeed = -10;
      } else { yspeed += gravity; }
     }
@@ -106,25 +107,47 @@ function gameLoop()
   if (leftPressed == 1)
     xspeed = Math.max(xspeed - 1,-1*maxSpeed);
 
+
+    
+ 
+ 
+  moveChar();
+
+   var blank = context.createImageData(100, 100);
+    for (var i = blank.data.length; --i >= 0; --i <=100)
+      blank.data[i] = 0;
+    context.putImageData(blank, xpos, ypos);
+    console.log("character");
+
+   var character = context.drawImage(char, xpos, ypos, 100, 100);
+
+   
+
+   
+ 
+  
+  
+    
+      
+
+  
+    
   
   if (upPressed == 0)
     yspeed+=gravity
   if (leftPressed == 0 && rightPressed == 0)
      slowDownX();
-    
-    BIPlatform(document.getElementById("platform"));
 
     
-  setTimeout("gameLoop()",16 + (2/3));
+  setTimeout("gameLoop()", 16 + (2/3));
+
+
 }
 
-function gravity() {
-   yspeed += 3;
-}
+function moveChar() {
+   addEventListener('keydown', function(e) {
 
-
-function keyDown(e)
-{
+  console.log("keyDown works");
   var code = e.keyCode ? e.keyCode : e.which;
   if (code == 38 || code == 32)
     upPressed = 1;
@@ -134,13 +157,14 @@ function keyDown(e)
     leftPressed = 1;
   if (code == 39) 
     rightPressed = 1;
-    
-  
-}
+  if (code == 27)
+    escPressed = 1;
+});
 
-function keyUp(e)
+addEventListener('keyup', function(e)
 {
   var code = e.keyCode ? e.keyCode : e.which;
+  console.log("keyup works");
   if (code == 38 || code == 32)
     upPressed = 0;
   if (code == 40)
@@ -149,7 +173,22 @@ function keyUp(e)
     leftPressed = 0;
   if (code == 39)
     rightPressed = 0;
+});
+
+
+
+ 
 }
+
+function exit() {
+
+}
+
+function gravity() {
+   yspeed += 3;
+}
+
+ 
 
 
 
