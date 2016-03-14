@@ -1,36 +1,44 @@
 
-var xmax = 500;
-var ymax = 600;
+var xmax = 900;
+var ymax = 499;
 var xmin = 0;
 var ymin = 0;
 
-var xpos = 100;
-var ypos = 500;
-var xspeed = 1;
+var increment = 1; //1 if 60fps, 2 if 30fps, etc.
+var xpos = 100 * increment;
+var ypos = 500 * increment;
+var xspeed = 0;
 var yspeed = 0;
 var maxSpeed = 10;
-var gravity = .2;
+var charHeight = 100;
+var charWidth = 100;
+
+var gravity = .2 * increment;
 
 var upPressed = 0;
 var downPressed = 0;
 var leftPressed = 0;
 var rightPressed = 0;
 var escPressed = 0;
+var plat1XPos = 100;
+var plat1YPos = 550;
+
+
+
 
 var canvas;
 var context;
 
-
-
-
-
-
+var char = new Image();
+char.src = "images/LuigiPic.png";
+var blank = new Image();
+blank.src = "images/blankImage.jpg";
 
 function loadCanvas() {
-  console.log("canvas loaded");
+  
   canvas = document.getElementById('canvas');
   context = canvas.getContext("2d");
-  context.rect(0, 0, 999, 600);
+  context.rect(0, 5, 1010, 1010);
   context.stroke();
   game();
 }
@@ -38,10 +46,14 @@ function loadCanvas() {
 function game() {
   var gamePos = 0;
   var char = new Image();
-  char.src = "images/LuigiPic.png";
+  
+  
+  char.width = 10;
+  char.height = 10;
+ 
 
   char.onload = function() {
-    context.drawImage(char, 100, 500, 100, 100);
+    context.drawImage(char, 100, 500, charWidth, charHeight);
   };
   context.beginPath();
   gameLoop();
@@ -55,17 +67,17 @@ function game() {
 function slowDownX()
 {
   if (xspeed > 0)
-    xspeed = xspeed - 1;
+    xspeed = xspeed - increment;
   if (xspeed < 0)
-    xspeed = xspeed + 1;
+    xspeed = xspeed + increment;
 }
 
 function slowDownY()
 {
   if (yspeed > 0)
-    yspeed = yspeed - 1;
+    yspeed = yspeed - increment;
   if (yspeed < 0)
-    yspeed = yspeed + 1;
+    yspeed = yspeed + increment;
 }
 
 
@@ -73,10 +85,14 @@ function slowDownY()
 function gameLoop()
 {
   
-    var char = new Image();
-    char.src = "images/LuigiPic.png";
+    
+  
+   erase(xpos, ypos, charWidth, charHeight);
+   erase(plat1XPos, plat1YPos, 550, 10);
+   
+ 
 
-    xpos = xpos + xspeed;
+    
     ypos = ypos + yspeed;
     
     if(xpos >= xmax) {
@@ -96,47 +112,42 @@ function gameLoop()
         xspeed -= xspeed;
     }
      if (upPressed == 1) {
-    console.log("pressed");
-    if (yspeed==0){ yspeed = -10;
+  
+    if (yspeed==0){ yspeed = increment*-8;
      } else { yspeed += gravity; }
     }
   if (downPressed == 1)
-    yspeed = Math.min(yspeed + 1,1*maxSpeed);
+    yspeed = Math.min(yspeed + increment, 1*maxSpeed);
   if (rightPressed == 1)
-    xspeed = Math.min(xspeed + 1,1*maxSpeed);
-  if (leftPressed == 1)
-    xspeed = Math.max(xspeed - 1,-1*maxSpeed);
-
-
+    progress(xpos);
     
- 
+  if (leftPressed == 1)
+    antiProgress(xpos);
+   
+
  
   moveChar();
-
-   var blank = context.createImageData(100, 100);
-    for (var i = blank.data.length; --i >= 0; --i <=100)
-      blank.data[i] = 0;
-    context.putImageData(blank, xpos, ypos);
-    console.log("character");
-
-   var character = context.drawImage(char, xpos, ypos, 100, 100);
-
-   
+  BIPlatform("images/MarioPlatform.png", plat1XPos, plat1YPos, 550, 10);
 
    
  
-  
-  
     
-      
 
+
+   
+     var character = context.drawImage(char, xpos, ypos, charWidth, charHeight);
+   
   
-    
+
   
   if (upPressed == 0)
     yspeed+=gravity
   if (leftPressed == 0 && rightPressed == 0)
      slowDownX();
+
+   // console.log("ypos: " + ypos);
+   // console.log("xpos: " + xpos);
+
 
     
   setTimeout("gameLoop()", 16 + (2/3));
@@ -144,10 +155,62 @@ function gameLoop()
 
 }
 
+function erase(xpos, ypos, width, height) {
+   var blank = context.createImageData(width, height);
+    for (var i = blank.data.length; --i >= 0; )
+      blank.data[i] = 0;
+    context.putImageData(blank, xpos, ypos);
+
+}
+
+
+function BIPlatform(platform, dist, height, length, width) {
+    var plat = new Image();
+    plat.src = platform;
+    context.drawImage(plat, dist, height, length, width);
+    if (xpos <= (dist + length) && xpos >= dist && (ypos + charHeight - width) >= height && (ypos + charHeight - width) <= height + width) {
+         ypos = height - charHeight + width; 
+       if(yspeed >= 0){
+        
+        yspeed -= yspeed;
+       }
+    }
+    
+}
+
+function HangRail(platform, dist, height, length, width) {
+    var plat = new Image();
+    plat.src = platform;
+    context.drawImage(plat, dist, height, length, width);
+    if (xpos <= (dist + length) && xpos >= dist && ypos >= height && ypos == height + width) {
+         ypos = height; 
+       if(yspeed >= 0){
+        
+        yspeed -= yspeed;
+       }
+    }
+    
+}
+
+function progress(d) {
+  xspeed = Math.min(xspeed + increment, 1*maxSpeed);
+  plat1XPos -= xspeed;
+
+}
+
+function antiProgress(d) {
+   xspeed = Math.max(xspeed - increment, -1*maxSpeed);
+   plat1XPos += xspeed;
+}
+
+
+
+
+
 function moveChar() {
    addEventListener('keydown', function(e) {
 
-  console.log("keyDown works");
+  
   var code = e.keyCode ? e.keyCode : e.which;
   if (code == 38 || code == 32)
     upPressed = 1;
@@ -164,7 +227,7 @@ function moveChar() {
 addEventListener('keyup', function(e)
 {
   var code = e.keyCode ? e.keyCode : e.which;
-  console.log("keyup works");
+  
   if (code == 38 || code == 32)
     upPressed = 0;
   if (code == 40)
@@ -188,52 +251,9 @@ function gravity() {
    yspeed += 3;
 }
 
- 
 
 
 
-function picSwitch(b)  {
-  var img = document.getElementById("character");
-  img.src = b;
-}
-
-function getImgTop(img) {
-    var bodyRect = document.body.getBoundingClientRect();
-    elemRect = img.getBoundingClientRect();
-    offset   = elemRect.top - bodyRect.top;
-    return offset;
-    
-}
-
-function getImgLeft(img) {
-    var bodyRect = document.body.getBoundingClientRect();
-    elemRect = img.getBoundingClientRect();
-    offset   = elemRect.left - bodyRect.left;
-    return offset;
-    
-}
-
-function getImgWidth(img) {
-    var bodyRect = document.body.getBoundingClientRect();
-    elemRect = img.getBoundingClientRect();
-    return elemRect.width;
-    
-}
-
-
-function BIPlatform(platform) {
-    var left = getImgLeft(platform);
-    var right = left + getImgWidth(platform);
-    var height = getImgTop(platform) - 40;
-    if (xpos <= right && xpos >= left && ypos >= height && ypos <= height + 20) {
-         ypos = height; 
-       if(yspeed >= 0){
-        
-        yspeed -= yspeed;
-       }
-    }
-    
-}
 
 function CannonShot(player) {
        

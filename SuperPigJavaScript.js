@@ -821,6 +821,10 @@ function levelTwo(){
 
       if(pigX >= 9000-translation && pigX <= 9200-translation && pigY >= 100 && pigY <= 233) hasWon = true;
       pig.addEventListener("load", function(){
+
+
+
+        
         drawBackground(context);
         context.textAlign = 'left';
         context.fillStyle = '#000000';
