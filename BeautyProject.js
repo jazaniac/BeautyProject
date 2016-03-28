@@ -22,6 +22,7 @@ var rightPressed = 0;
 var escPressed = 0;
 var plat1XPos = 100;
 var plat1YPos = 550;
+var reverseLimit = 0;
 
 
 
@@ -199,8 +200,11 @@ function progress(d) {
 }
 
 function antiProgress(d) {
+  
+
+
    xspeed = Math.max(xspeed - increment, -1*maxSpeed);
-   plat1XPos += xspeed;
+   plat1XPos -= xspeed;
 }
 
 
