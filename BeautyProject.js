@@ -31,13 +31,17 @@ var canvas;
 var context;
 
 var char = new Image();
-char.src = "images/LuigiPic.png";
+char.src = "images/FinalJacqueSprite.png";
 var blank = new Image();
 blank.src = "images/blankImage.jpg";
 
+
+
 function loadCanvas() {
   
-  canvas = document.getElementById('canvas');
+  canvas = document.getElementById('canvas'), dashLen = 220, 
+    dashOffset = dashLen, speed = 5,
+    txt = "STROKE-ON CANVAS", x = 30, i = 0;
   context = canvas.getContext("2d");
   context.rect(0, 5, 1010, 1010);
   context.stroke();
@@ -54,7 +58,7 @@ function game() {
  
 
   char.onload = function() {
-    context.drawImage(char, 100, 500, charWidth, charHeight);
+    context.drawImage(char, 10, 10, 10, 10, 100, 500, charWidth, charHeight);
   };
   context.beginPath();
   gameLoop();
@@ -136,7 +140,7 @@ function gameLoop()
 
 
    
-     var character = context.drawImage(char, xpos, ypos, charWidth, charHeight);
+     var character = context.drawImage(char, 0, 0, 300, 300, xpos, ypos, charWidth, charHeight);
    
   
 
@@ -242,7 +246,11 @@ addEventListener('keyup', function(e)
     rightPressed = 0;
 });
 
-
+function animateSprite() {
+  if (yspeed == 0) {
+   
+  }
+}
 
  
 }
