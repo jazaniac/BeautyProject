@@ -23,6 +23,8 @@ var escPressed = 0;
 var plat1XPos = 100;
 var plat1YPos = 550;
 var reverseLimit = 0;
+var frameCount = 0;
+var leftRight; //0 if facing right, 1 if facing left
 
 
 
@@ -93,7 +95,7 @@ function gameLoop()
     
   
    erase(xpos, ypos, charWidth, charHeight);
-   erase(plat1XPos, plat1YPos, 550, 10);
+   erase(plat1XPos, plat1YPos, 750, 10);
    
  
 
@@ -123,16 +125,21 @@ function gameLoop()
     }
   if (downPressed == 1)
     yspeed = Math.min(yspeed + increment, 1*maxSpeed);
-  if (rightPressed == 1)
+  if (rightPressed == 1){
     progress(xpos);
+    leftRight = 0;
+  }
     
-  if (leftPressed == 1)
+  if (leftPressed == 1){
     antiProgress(xpos);
+    leftRight = 1;
+  }
    
 
  
   moveChar();
-  BIPlatform("images/MarioPlatform.png", plat1XPos, plat1YPos, 550, 10);
+  BIPlatform("images/MarioPlatform.png", plat1XPos, plat1YPos, 750, 10);
+  frameIncrease();
 
    
  
@@ -140,7 +147,8 @@ function gameLoop()
 
 
    
-     var character = context.drawImage(char, 0, 0, 300, 300, xpos, ypos, charWidth, charHeight);
+     //var character = context.drawImage(char, 0, 0, 300, 300, xpos, ypos, charWidth, charHeight);
+     animateSprite();
    
   
 
@@ -245,15 +253,71 @@ addEventListener('keyup', function(e)
   if (code == 39)
     rightPressed = 0;
 });
+}
 
 function animateSprite() {
+  
+  console.log("method triggered");
+  var imgX;
   if (yspeed == 0) {
-   
-  }
+
+    console.log("second stage triggered");
+    if (xspeed > 0){
+      
+      console.log(leftRight);
+      if(frameCount >= 0 && frameCount < 5){
+        //console.log("first FC triggered");
+        imgX = 2754;
+      }
+      else if(frameCount >= 5 && frameCount < 10)
+        imgX = 3672;
+      else
+        imgX = 4590;
+    }
+    else if (xspeed < 0){
+     
+      if(frameCount >= 0 && frameCount < 5){
+        console.log("second FC triggered");
+        imgX = 0;
+      }
+      else if(frameCount >= 5 && frameCount < 10)
+        imgX = 921;
+      else
+        imgX = 1844;
+    }
+    if(xspeed == 0) {
+      if(leftRight == 0)
+        imgX = 3672;
+      else
+        imgX = 921;
+    }
+
+ }else{
+  console.log(leftRight);
+  if(leftRight == 0)
+        imgX = 2757;
+      else if(leftRight==1)
+        imgX = 0;
+    
+ 
+  console.log("else triggered");
+ }
+
+var character = context.drawImage(char, imgX, 0, 185, 310, xpos, ypos, charWidth, charHeight);
+console.log("end of method reached");
+}
+
+
+function frameIncrease(){
+  frameCount++;
+  if(frameCount >= 15)
+    frameCount = 0;
+  console.log(frameCount);
+
 }
 
  
-}
+
 
 function exit() {
 
@@ -267,7 +331,3 @@ function gravity() {
 
 
 
-function CannonShot(player) {
-       
-    
-}
