@@ -221,7 +221,10 @@ function SolidPlatform(platform, dist, height, length, width) {
       ypos = height + width;
       if(yspeed <= 0)
         yspeed -= yspeed;
+      ypos = height + width + 1;
+      yspeed = .01;
     }
+
 }
 
 function progress(d) {
