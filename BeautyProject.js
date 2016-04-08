@@ -9,7 +9,7 @@ var xpos = 100 * increment;
 var ypos = 500 * increment;
 var xspeed = 0;
 var yspeed = 0;
-var maxSpeed = 10;
+var maxSpeed = 15;
 var charHeight = 100;
 var charWidth = 100;
 
@@ -21,7 +21,7 @@ var leftPressed = 0;
 var rightPressed = 0;
 var escPressed = 0;
 var plat1XPos = 100;
-var plat1YPos = 550;
+var plat1YPos = 460;
 var reverseLimit = 0;
 var frameCount = 0;
 var leftRight; //0 if facing right, 1 if facing left
@@ -138,7 +138,7 @@ function gameLoop()
 
  
   moveChar();
-  BIPlatform("images/MarioPlatform.png", plat1XPos, plat1YPos, 750, 10);
+  SolidPlatform("images/SolidPlatform.png", plat1XPos, plat1YPos, 750, 10);
   frameIncrease();
 
    
@@ -173,7 +173,6 @@ function erase(xpos, ypos, width, height) {
     for (var i = blank.data.length; --i >= 0; )
       blank.data[i] = 0;
     context.putImageData(blank, xpos, ypos);
-
 }
 
 
@@ -184,9 +183,12 @@ function BIPlatform(platform, dist, height, length, width) {
     if (xpos <= (dist + length) && xpos >= dist && (ypos + charHeight - width) >= height && (ypos + charHeight - width) <= height + width) {
          ypos = height - charHeight + width; 
        if(yspeed >= 0){
-        
         yspeed -= yspeed;
        }
+       if(downPressed == 1)
+        ypos += 1 + width;
+
+
     }
     
 }
@@ -203,6 +205,23 @@ function HangRail(platform, dist, height, length, width) {
        }
     }
     
+}
+
+function SolidPlatform(platform, dist, height, length, width) {
+  var plat = new Image();
+  plat.src = platform;
+   context.drawImage(plat, dist, height, length, width);
+    if (xpos <= (dist + length) && xpos >= dist && (ypos + charHeight - width) >= height && (ypos + charHeight - width) <= height + width) {
+         ypos = height - charHeight + width; 
+       if(yspeed >= 0){
+        yspeed -= yspeed;
+       }
+     }
+    if(xpos <= (dist + length) && xpos >= dist && (ypos) >= height && ypos <= height+width) {
+      ypos = height + width;
+      if(yspeed <= 0)
+        yspeed -= yspeed;
+    }
 }
 
 function progress(d) {
@@ -257,11 +276,11 @@ addEventListener('keyup', function(e)
 
 function animateSprite() {
   
-  console.log("method triggered");
+  //console.log("method triggered");
   var imgX;
   if (yspeed == 0) {
 
-    console.log("second stage triggered");
+    //console.log("second stage triggered");
     if (xspeed > 0){
       
       console.log(leftRight);
@@ -269,21 +288,22 @@ function animateSprite() {
         //console.log("first FC triggered");
         imgX = 2754;
       }
-      else if(frameCount >= 5 && frameCount < 10)
+      else if(frameCount >= 5 && frameCount < 10 || frameCount >= 15 && frameCount <= 20)
         imgX = 3672;
-      else
+      else if(frameCount >= 10 && frameCount < 15)
         imgX = 4590;
     }
     else if (xspeed < 0){
      
       if(frameCount >= 0 && frameCount < 5){
-        console.log("second FC triggered");
+        //console.log("second FC triggered");
         imgX = 0;
       }
-      else if(frameCount >= 5 && frameCount < 10)
+      else if(frameCount >= 5 && frameCount < 10 || frameCount>=15 && frameCount <= 20)
         imgX = 921;
-      else
+      else if(frameCount >= 10 && frameCount <15)
         imgX = 1844;
+
     }
     if(xspeed == 0) {
       if(leftRight == 0)
@@ -310,22 +330,32 @@ console.log("end of method reached");
 
 function frameIncrease(){
   frameCount++;
-  if(frameCount >= 15)
+  if(frameCount >= 20)
     frameCount = 0;
   console.log(frameCount);
 
 }
 
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
  
+function randomPlat() {
+  var maxYRandom = ypos - 200;
+  if (maxYRandom < 200)
+    maxYRandom += 200;
+  var dist = getRandomInt(xpos + 100, xpos + 900);
+  var length = getRandomInt(300, 800);
+  var height = getRandomInt(maxYRandom, 900);
 
 
-function exit() {
+
+
 
 }
 
-function gravity() {
-   yspeed += 3;
-}
+
 
 
 
