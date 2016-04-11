@@ -6,18 +6,22 @@ var ymin = 0;
 
 var increment = 1; //1 if 60fps, 2 if 30fps, etc.
 var xpos = 100 * increment;
-var ypos = 500 * increment;
+var ypos = 600 * increment;
 var xspeed = 0;
 var yspeed = 0;
 var maxSpeed = 15;
 var charHeight = 100;
 var charWidth = 100;
 
-var gravity = .2 * increment;
+var gravity = .15 * increment;
 
 var progressNum = 0;
 
-var platType;
+var addPlat = 1;
+
+var platType1;
+var platType2;
+var platType3;
 
 var upPressed = 0;
 var downPressed = 0;
@@ -25,19 +29,30 @@ var leftPressed = 0;
 var rightPressed = 0;
 var escPressed = 0;
 
-var plat1XPos = 0;
-var plat1YPos = 0;
-var plat1Length = 1;
-var plat1Width = 10;
+var platWidth = 20;
+var platType;
 
-var plat2Xpos = 500;
-var plat2Ypos = 370;
+var plat1XPos = 0;
+var plat1YPos = ypos;
+var plat1Length = 400;
+
+var plat2XPos = 0;
+var plat2YPos = 0;
+var plat2Length = 1;
+
+var plat3XPos = 0;
+var plat3YPos = ypos;
+var plat3Length = 1;
+
+var maxYRandomVar = 150; //for randomPlat
+
 
 var reverseLimit = 0;
 var frameCount = 0;
 var leftRight; //0 if facing right, 1 if facing left
 
-
+var canPrintPlat2 = false;
+var canPrintPlat3 = false;
 
 
 var canvas;
@@ -102,8 +117,9 @@ function slowDownY()
 function gameLoop()
 {
   
-  erase(plat1XPos, plat1YPos, plat1Length, 10); 
-  erase(plat2Xpos, plat2Ypos, 500, 10);
+  erase(plat1XPos, plat1YPos - 10, plat1Length, platWidth + 10); 
+  erase(plat2XPos, plat2YPos - 10, plat2Length, platWidth + 10);
+  erase(plat3XPos, plat3YPos - 10, plat3Length, platWidth + 10)
   erase(xpos, ypos, charWidth, charHeight);
 
 
@@ -152,16 +168,22 @@ function gameLoop()
     leftRight = 1;
   }
 
-    HangRail("images/HangRail.png", plat2Xpos, plat2Ypos, 500, 10);
+    
 
-   randomPlat(50);
+   randomPlat(200);
   
-   if(platType == 1)
-    BIPlatform("images/MarioPlatform.png", plat1XPos, plat1YPos, plat1Length, 10);
-  else if(platType == 2)
-    HangRail("images/HangRail.png", plat1XPos, plat1YPos, plat1Length, 10);
-  else if(platType == 3)
-    SolidPlatform("images/SolidPlatform.png", plat1XPos, plat1YPos, plat1Length, 10);
+    drawRandomPlat1(plat1XPos, plat1YPos, plat1Length); //need to make it so that plat type doesn't change with the next plat
+    console.log("plat1xpos: " + plat1XPos + "plat1YPos: " + plat1YPos + "plat1Length: " + plat1Length);
+  if (canPrintPlat2 == true)
+    drawRandomPlat2(plat2XPos, plat2YPos, plat2Length);
+  console.log("plat2xpos: " + plat2XPos + "plat2YPos: " + plat2YPos + "plat2Length: " + plat2Length);
+  if (canPrintPlat3 == true)
+    drawRandomPlat3(plat3XPos, plat3YPos, plat3Length);
+  console.log("plat3xpos: " + plat3XPos + "plat3YPos: " + plat3YPos + "plat3Length: " + plat3Length);
+
+
+
+   
   frameIncrease();
    
 
@@ -196,6 +218,8 @@ function gameLoop()
 
 }
 
+
+
 function erase(xpos, ypos, width, height) {
    var blank = context.createImageData(width, height);
     for (var i = blank.data.length; --i >= 0; )
@@ -208,7 +232,7 @@ function BIPlatform(platform, dist, height, length, width) {
     var plat = new Image();
     plat.src = platform;
     context.drawImage(plat, dist, height, length, width);
-    if (xpos <= (dist + length) && xpos >= dist && (ypos + charHeight - width) >= height && (ypos + charHeight - width) <= height + width) {
+    if (xpos <= (dist + length) && (xpos + charWidth) >= dist && (ypos + charHeight - width) >= height && (ypos + charHeight - width) <= height + width) {
          ypos = height - charHeight + width; 
        if(yspeed >= 0){
         yspeed -= yspeed;
@@ -225,7 +249,7 @@ function HangRail(platform, dist, height, length, width) {
     var plat = new Image();
     plat.src = platform;
     context.drawImage(plat, dist, height, length, width);
-    if (xpos <= (dist + length) && xpos >= dist && ypos <= height + width && ypos >= height) {
+    if (xpos <= (dist + length) && xpos + charWidth >= dist && ypos <= height + width && ypos >= height) {
          ypos = height; 
        if(yspeed >= 0){
         
@@ -241,7 +265,7 @@ function SolidPlatform(platform, dist, height, length, width) {
   var plat = new Image();
   plat.src = platform;
    context.drawImage(plat, dist, height, length, width);
-    if (xpos <= (dist + length) && xpos >= dist && (ypos + charHeight - width) >= height && (ypos + charHeight - width) <= height + width) {
+    if (xpos <= (dist + length) && xpos + charWidth >= dist && (ypos + charHeight - width) >= height && (ypos + charHeight - width) <= height + width) {
          ypos = height - charHeight + width; 
        if(yspeed >= 0){
         yspeed -= yspeed;
@@ -254,26 +278,17 @@ function SolidPlatform(platform, dist, height, length, width) {
       ypos = height + width + 1;
       
     }
-    if(plat1XPos == xpos && ypos + charHeight >= height){
-      if (xspeed != 0)
-        xspeed -= xspeed; 
-      plat1XPos = xpos;
-    }else if (xpos == dist + width && ypos + charHeight >= height){
-      if (xspeed != 0)
-        xspeed -= xspeed;
-      plat1XPos = xpos - length;
-
-
-
-    }
+    
 
 
 
 }
 
 function progress(d) {
+
   plat1XPos -= xspeed;
-  plat2Xpos -= xspeed;
+  plat2XPos -= xspeed;
+  plat3XPos -= xspeed;
   xspeed = Math.min(xspeed + increment, 1*maxSpeed);
   progressNum += xspeed;
   
@@ -282,10 +297,9 @@ function progress(d) {
 }
 
 function antiProgress() {
-  
-
   plat1XPos -= xspeed;
-  plat2Xpos -= xspeed;
+  plat2XPos -= xspeed;
+  plat3XPos -= xspeed;
   progressNum += xspeed;
   xspeed = Math.max(xspeed - increment, -1*maxSpeed);
    
@@ -391,33 +405,123 @@ function frameIncrease(){
 
 function getRandomInt(min, max) {
   
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+   return Math.floor(Math.random() * ((max + 1) - min)) + min;
 }
 
 
 function randomPlat(freq) {
- 
-  if (progressNum >= freq + plat1Length) {
+  var canDo;
+
+  canDo = 0;
+
+  if(addPlat == 2)
+    canDo = plat1Length;
+  if(canPrintPlat2){
+    if(addPlat == 3)
+      canDo = plat2Length;
+  }
+  if(canPrintPlat3) {
+    if(addPlat == 1)
+      canDo = plat3Length;
+  }
+
+  if (progressNum >= freq + canDo) {
+
+  var platXPos;
+  var platYPos;
+  var platLength;
+  var maxYRandom;
+  
+
+  if(addPlat == 2)
+    maxYRandom = plat1YPos - maxYRandomVar;
+  else if(addPlat == 3)
+    maxYRandom = plat2YPos - maxYRandomVar;
+  else if(addPlat == 1)
+    maxYRandom = plat3YPos - maxYRandomVar;
+
+  if(platType == 2)
+    maxYRandom += 70;
+
      
   
-  var maxYRandom = ypos - 200;
-  if (maxYRandom < 200)
-    maxYRandom += 200;
-  plat1XPos = getRandomInt(xpos + 100, xpos + 200);
+  
+  if (maxYRandom < 100)
+    maxYRandom += 100;
+  
+  platXPos = getRandomInt(xpos + 200, xpos + 300);
  
 
-  plat1Length = getRandomInt(300, 800);
+  platLength = getRandomInt(300, 800);
   
   
-  plat1YPos = getRandomInt(maxYRandom, 900);
+  platYPos = getRandomInt(maxYRandom, 500);
  
   
   platType = getRandomInt(1, 3); //1 = BIplat, 2 = hangrail, 3 = solidplat
   
   progressNum-=progressNum;
-  
+  console.log("progressNum: " + progressNum);
+
+  if(addPlat == 1) {
+    platType1 = platType
+    plat1XPos = platXPos;
+    plat1YPos = platYPos;
+    plat1Length = platLength;
+  }
+  else if(addPlat == 2) {
+    canPrintPlat2 = true;
+    platType2 = platType;
+    console.log(canPrintPlat2);
+    plat2XPos = platXPos;
+    plat2YPos = platYPos;
+    plat2Length = platLength;
+  }
+  else if(addPlat == 3) {
+    canPrintPlat3 = true;
+    platType3 = platType;
+    console.log(canPrintPlat3);
+    plat3XPos = platXPos;
+    plat3YPos = platYPos;
+    plat3Length = platLength;
+  }
+
+    if(addPlat > 3)
+      addPlat -= addPlat;
+
+    addPlat++;
+
+
   }
 }
+
+function drawRandomPlat1(dist, height, length) {
+  if(platType1 == 1)
+    BIPlatform("images/MarioPlatform.png", dist, height, length, platWidth);
+  else if(platType1 == 2)
+    HangRail("images/HangRail.png", dist, height, length, platWidth);
+  else if(platType1 == 3)
+    SolidPlatform("images/SolidPlatform.png", dist, height, length, platWidth);
+}
+
+function drawRandomPlat2(dist, height, length) {
+  if(platType2 == 1)
+    BIPlatform("images/MarioPlatform.png", dist, height, length, platWidth);
+  else if(platType2 == 2)
+    HangRail("images/HangRail.png", dist, height, length, platWidth);
+  else if(platType2 == 3)
+    SolidPlatform("images/SolidPlatform.png", dist, height, length, platWidth);
+}
+
+function drawRandomPlat3(dist, height, length) {
+  if(platType3 == 1)
+    BIPlatform("images/MarioPlatform.png", dist, height, length, platWidth);
+  else if(platType3 == 2)
+    HangRail("images/HangRail.png", dist, height, length, platWidth);
+  else if(platType3 == 3)
+    SolidPlatform("images/SolidPlatform.png", dist, height, length, platWidth);
+}
+
 
 function randomPlatTrigger (freq) {
   
