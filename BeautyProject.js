@@ -30,6 +30,9 @@ var plat1YPos = 0;
 var plat1Length = 1;
 var plat1Width = 10;
 
+var plat2Xpos = 500;
+var plat2Ypos = 370;
+
 var reverseLimit = 0;
 var frameCount = 0;
 var leftRight; //0 if facing right, 1 if facing left
@@ -100,7 +103,10 @@ function gameLoop()
 {
   
   erase(plat1XPos, plat1YPos, plat1Length, 10); 
+  erase(plat2Xpos, plat2Ypos, 500, 10);
   erase(xpos, ypos, charWidth, charHeight);
+
+
   
 
    
@@ -146,6 +152,8 @@ function gameLoop()
     leftRight = 1;
   }
 
+    HangRail("images/HangRail.png", plat2Xpos, plat2Ypos, 500, 10);
+
    randomPlat(50);
   
    if(platType == 1)
@@ -181,7 +189,7 @@ function gameLoop()
    // console.log("ypos: " + ypos);
    // console.log("xpos: " + xpos);
 
-  
+  console.log(progressNum);
     
   setTimeout("gameLoop()", 16 + (2/3));
 
@@ -206,7 +214,7 @@ function BIPlatform(platform, dist, height, length, width) {
         yspeed -= yspeed;
        }
        if(downPressed == 1)
-        ypos += 1 + width;
+        ypos += width;
 
 
     }
@@ -217,12 +225,14 @@ function HangRail(platform, dist, height, length, width) {
     var plat = new Image();
     plat.src = platform;
     context.drawImage(plat, dist, height, length, width);
-    if (xpos <= (dist + length) && xpos >= dist && ypos >= height && ypos == height + width) {
+    if (xpos <= (dist + length) && xpos >= dist && ypos <= height + width && ypos >= height) {
          ypos = height; 
        if(yspeed >= 0){
         
         yspeed -= yspeed;
        }
+       if(downPressed == 1)
+        ypos += width;
     }
     
 }
@@ -263,6 +273,7 @@ function SolidPlatform(platform, dist, height, length, width) {
 
 function progress(d) {
   plat1XPos -= xspeed;
+  plat2Xpos -= xspeed;
   xspeed = Math.min(xspeed + increment, 1*maxSpeed);
   progressNum += xspeed;
   
@@ -274,6 +285,7 @@ function antiProgress() {
   
 
   plat1XPos -= xspeed;
+  plat2Xpos -= xspeed;
   progressNum += xspeed;
   xspeed = Math.max(xspeed - increment, -1*maxSpeed);
    
