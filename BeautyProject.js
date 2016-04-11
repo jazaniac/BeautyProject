@@ -15,13 +15,21 @@ var charWidth = 100;
 
 var gravity = .2 * increment;
 
+var progressNum = 0;
+
+var platType;
+
 var upPressed = 0;
 var downPressed = 0;
 var leftPressed = 0;
 var rightPressed = 0;
 var escPressed = 0;
-var plat1XPos = 100;
-var plat1YPos = 460;
+
+var plat1XPos = 0;
+var plat1YPos = 0;
+var plat1Length = 1;
+var plat1Width = 10;
+
 var reverseLimit = 0;
 var frameCount = 0;
 var leftRight; //0 if facing right, 1 if facing left
@@ -34,8 +42,7 @@ var context;
 
 var char = new Image();
 char.src = "images/FinalJacqueSprite.png";
-var blank = new Image();
-blank.src = "images/blankImage.jpg";
+
 
 
 
@@ -92,15 +99,19 @@ function slowDownY()
 function gameLoop()
 {
   
-    
+  erase(plat1XPos, plat1YPos, plat1Length, 10); 
+  erase(xpos, ypos, charWidth, charHeight);
   
-   erase(xpos, ypos, charWidth, charHeight);
-   erase(plat1XPos, plat1YPos, 750, 10);
+
    
  
 
     
     ypos = ypos + yspeed;
+
+   
+
+
     
     if(xpos >= xmax) {
         xpos = xmax;
@@ -131,15 +142,24 @@ function gameLoop()
   }
     
   if (leftPressed == 1){
-    antiProgress(xpos);
+    antiProgress();
     leftRight = 1;
   }
+
+   randomPlat(50);
+  
+   if(platType == 1)
+    BIPlatform("images/MarioPlatform.png", plat1XPos, plat1YPos, plat1Length, 10);
+  else if(platType == 2)
+    HangRail("images/HangRail.png", plat1XPos, plat1YPos, plat1Length, 10);
+  else if(platType == 3)
+    SolidPlatform("images/SolidPlatform.png", plat1XPos, plat1YPos, plat1Length, 10);
+  frameIncrease();
    
 
  
   moveChar();
-  SolidPlatform("images/SolidPlatform.png", plat1XPos, plat1YPos, 750, 10);
-  frameIncrease();
+  
 
    
  
@@ -161,7 +181,7 @@ function gameLoop()
    // console.log("ypos: " + ypos);
    // console.log("xpos: " + xpos);
 
-
+  
     
   setTimeout("gameLoop()", 16 + (2/3));
 
@@ -222,23 +242,41 @@ function SolidPlatform(platform, dist, height, length, width) {
       if(yspeed <= 0)
         yspeed -= yspeed;
       ypos = height + width + 1;
-      yspeed = .01;
+      
     }
+    if(plat1XPos == xpos && ypos + charHeight >= height){
+      if (xspeed != 0)
+        xspeed -= xspeed; 
+      plat1XPos = xpos;
+    }else if (xpos == dist + width && ypos + charHeight >= height){
+      if (xspeed != 0)
+        xspeed -= xspeed;
+      plat1XPos = xpos - length;
+
+
+
+    }
+
+
 
 }
 
 function progress(d) {
-  xspeed = Math.min(xspeed + increment, 1*maxSpeed);
   plat1XPos -= xspeed;
+  xspeed = Math.min(xspeed + increment, 1*maxSpeed);
+  progressNum += xspeed;
+  
+  
 
 }
 
-function antiProgress(d) {
+function antiProgress() {
   
 
-
-   xspeed = Math.max(xspeed - increment, -1*maxSpeed);
-   plat1XPos -= xspeed;
+  plat1XPos -= xspeed;
+  progressNum += xspeed;
+  xspeed = Math.max(xspeed - increment, -1*maxSpeed);
+   
 }
 
 
@@ -286,7 +324,7 @@ function animateSprite() {
     //console.log("second stage triggered");
     if (xspeed > 0){
       
-      console.log(leftRight);
+      
       if(frameCount >= 0 && frameCount < 5){
         //console.log("first FC triggered");
         imgX = 2754;
@@ -316,18 +354,18 @@ function animateSprite() {
     }
 
  }else{
-  console.log(leftRight);
+ // console.log(leftRight);
   if(leftRight == 0)
         imgX = 2757;
       else if(leftRight==1)
         imgX = 0;
     
  
-  console.log("else triggered");
+
  }
 
 var character = context.drawImage(char, imgX, 0, 185, 310, xpos, ypos, charWidth, charHeight);
-console.log("end of method reached");
+
 }
 
 
@@ -335,28 +373,44 @@ function frameIncrease(){
   frameCount++;
   if(frameCount >= 20)
     frameCount = 0;
-  console.log(frameCount);
+ // console.log(frameCount);
 
 }
 
 function getRandomInt(min, max) {
+  
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+
+function randomPlat(freq) {
  
-function randomPlat() {
+  if (progressNum >= freq + plat1Length) {
+     
+  
   var maxYRandom = ypos - 200;
   if (maxYRandom < 200)
     maxYRandom += 200;
-  var dist = getRandomInt(xpos + 100, xpos + 900);
-  var length = getRandomInt(300, 800);
-  var height = getRandomInt(maxYRandom, 900);
+  plat1XPos = getRandomInt(xpos + 100, xpos + 200);
+ 
 
-
-
-
-
+  plat1Length = getRandomInt(300, 800);
+  
+  
+  plat1YPos = getRandomInt(maxYRandom, 900);
+ 
+  
+  platType = getRandomInt(1, 3); //1 = BIplat, 2 = hangrail, 3 = solidplat
+  
+  progressNum-=progressNum;
+  
+  }
 }
+
+function randomPlatTrigger (freq) {
+  
+}
+
 
 
 
