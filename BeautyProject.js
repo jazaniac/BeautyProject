@@ -5,7 +5,7 @@ var xmin = 0;
 var ymin = 0;
 
 var increment = 1; //1 if 60fps, 2 if 30fps, etc.
-var xpos = 100 * increment;
+var xpos = 300 * increment;
 var ypos = 600 * increment;
 var xspeed = 0;
 var yspeed = 0;
@@ -16,6 +16,7 @@ var charWidth = 100;
 var gravity = .15 * increment;
 
 var progressNum = 0;
+var prog = 0;
 
 var addPlat = 1;
 
@@ -45,6 +46,13 @@ var plat3YPos = ypos;
 var plat3Length = 1;
 
 var maxYRandomVar = 150; //for randomPlat
+
+var textInBox;
+var textBoxXVal = 0;
+var textBoxYVal = 0;
+var textBoxWidth = 1;
+var textBoxHeight = 1;
+var canText = false;
 
 
 var reverseLimit = 0;
@@ -116,10 +124,15 @@ function slowDownY()
 
 function gameLoop()
 {
-  
+  console.log("prog: " + prog);
   erase(plat1XPos, plat1YPos - 10, plat1Length, platWidth + 10); 
   erase(plat2XPos, plat2YPos - 10, plat2Length, platWidth + 10);
-  erase(plat3XPos, plat3YPos - 10, plat3Length, platWidth + 10)
+  erase(plat3XPos, plat3YPos - 10, plat3Length, platWidth + 10);
+
+
+  
+  //eraseText();
+
   erase(xpos, ypos, charWidth, charHeight);
 
 
@@ -181,6 +194,16 @@ function gameLoop()
     drawRandomPlat3(plat3XPos, plat3YPos, plat3Length);
   console.log("plat3xpos: " + plat3XPos + "plat3YPos: " + plat3YPos + "plat3Length: " + plat3Length);
 
+  textBox("Hello World", 350, 0, 300, 100, "30px Times");
+
+  if(prog > 200) {
+    eraseText();
+  }
+  if(prog > 200){
+    console.log("new stuff triggered");
+    textBox("new stuff", 350, 0, 300, 100, "30px Times");
+  }
+
 
 
    
@@ -211,7 +234,7 @@ function gameLoop()
    // console.log("ypos: " + ypos);
    // console.log("xpos: " + xpos);
 
-  console.log(progressNum);
+  console.log("progressNum: " + progressNum);
     
   setTimeout("gameLoop()", 16 + (2/3));
 
@@ -272,10 +295,10 @@ function SolidPlatform(platform, dist, height, length, width) {
        }
      }
     if(xpos <= (dist + length) && xpos >= dist && (ypos) >= height && ypos <= height+width) {
-      ypos = height + width;
+      ypos = height + platWidth;
       if(yspeed <= 0)
-        yspeed -= yspeed;
-      ypos = height + width + 1;
+        yspeed = -.0001;
+      ypos = height + platWidth;
       
     }
     
@@ -291,6 +314,9 @@ function progress(d) {
   plat3XPos -= xspeed;
   xspeed = Math.min(xspeed + increment, 1*maxSpeed);
   progressNum += xspeed;
+  prog++;
+  
+
   
   
 
@@ -449,7 +475,7 @@ function randomPlat(freq) {
   if (maxYRandom < 100)
     maxYRandom += 100;
   
-  platXPos = getRandomInt(xpos + 200, xpos + 300);
+  platXPos = getRandomInt(xpos + 200, xpos + 300) + 600;
  
 
   platLength = getRandomInt(300, 800);
@@ -523,7 +549,24 @@ function drawRandomPlat3(dist, height, length) {
 }
 
 
-function randomPlatTrigger (freq) {
+
+
+function textBox(text, xVal, yVal, width, height, font) {
+  context.font = font;
+  context.fillStyle = "#000000";
+  context.rect(xVal, yVal, width, height);
+  context.fillText(text, xVal, yVal + height*2/3);
+  context.stroke();
+  
+
+}
+
+function eraseText() {
+  context.fillStyle = "#ffffff";
+  context.fillRect(350, 0, 1000, 1000);
+  context.stroke();
+
+ 
   
 }
 
