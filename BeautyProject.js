@@ -1,12 +1,14 @@
 
 var xmax = 900;
-var ymax = 499;
+var ymax = 700;
+var deathYVal = 500;
 var xmin = 0;
 var ymin = 0;
+var speedIncrement = 0.5;
 
 var increment = 1; //1 if 60fps, 2 if 30fps, etc.
 var xpos = 300 * increment;
-var ypos = 600 * increment;
+var ypos = 450 * increment;
 var xspeed = 0;
 var yspeed = 0;
 var maxSpeed = 15;
@@ -30,6 +32,8 @@ var leftPressed = 0;
 var rightPressed = 0;
 var escPressed = 0;
 
+var goBackNum;
+
 var platWidth = 20;
 var platType;
 
@@ -37,22 +41,44 @@ var plat1XPos = 0;
 var plat1YPos = ypos;
 var plat1Length = 400;
 
+var backgroundFlip = 0; 
+
 var plat2XPos = 0;
 var plat2YPos = 0;
 var plat2Length = 1;
 
 var plat3XPos = 0;
-var plat3YPos = ypos;
+var plat3YPos = 650;
 var plat3Length = 1;
+
+var firstPlatXPos = 0;
+var firstPlatYPos = 480 + charHeight;
+var firstPlatLength = 2000;
+
+var backgroundXPos;
+var backgroundYPos;
+var backgroundWidth;
+var backgroundHeight;
+var backgroundPic;
+
+var background2XPos = 0;
+var background2YPos;
+var background2Pic;
+
+var backgroundSwitches = 0;
+
 
 var maxYRandomVar = 150; //for randomPlat
 
 var textInBox;
-var textBoxXVal = 0;
+var textBoxXVal = 150;
 var textBoxYVal = 0;
-var textBoxWidth = 1;
-var textBoxHeight = 1;
+var textBoxWidth = 600;
+var textBoxHeight = 100;
 var canText = false;
+var text = " ";
+var textFont = "30px Times";
+var isTooSlow = false;
 
 
 var reverseLimit = 0;
@@ -61,6 +87,20 @@ var leftRight; //0 if facing right, 1 if facing left
 
 var canPrintPlat2 = false;
 var canPrintPlat3 = false;
+
+var canProgress = true;
+
+var canLoop = true;
+
+var dead = false;
+
+var stage = 1;
+
+
+
+
+
+
 
 
 var canvas;
@@ -84,16 +124,116 @@ function loadCanvas() {
 }
 
 function game() {
-  var gamePos = 0;
-  var char = new Image();
+
+  erase(plat1XPos, plat1YPos - 10, plat1Length, platWidth + 10); 
+  erase(plat2XPos, plat2YPos - 10, plat2Length, platWidth + 10);
+  erase(plat3XPos, plat3YPos - 10, plat3Length, platWidth + 10);
+  erase(firstPlatXPos, firstPlatYPos, firstPlatLength, 10);
+
+
+
+
+dead = false;
+
+xmax = 900;
+ymax = 700;
+ deathYVal = 500;
+ xmin = 0;
+  ymin = 0;
+
+increment = 1; //1 if 60fps, 2 if 30fps, etc.
+xpos = 300 * increment;
+ypos = 300 * increment;
+xspeed = 0;
+yspeed = 0;
+maxSpeed = 15;
+charHeight = 100;
+charWidth = 100;
+
+gravity = .15 * increment;
+
+progressNum = 0;
+prog = 0;
+
+addPlat = 1;
+
+
+
+upPressed = 0;
+downPressed = 0;
+leftPressed = 0;
+rightPressed = 0;
+escPressed = 0;
+
+platWidth = 20;
+
+
+plat1XPos = 50000;
+plat1YPos = 450;
+plat1Length = 400;
+
+plat2XPos = 50000;
+plat2YPos = 0;
+plat2Length = 1;
+
+plat3XPos = 50000;
+plat3YPos = 450;
+plat3Length = 1;
+
+firstPlatXPos = 0;
+firstPlatYPos = 480 + charHeight;
+firstPlatLength = 2000;
+
+backgroundXPos = 0;
+backgroundYPos = 0;
+backgroundWidth = 5112.15;
+backgroundHeight = 700;
+
+maxYRandomVar = 150; //for randomPlat
+
+//textBox(text, textBoxXVal, textBoxYVal, textBoxWidth, textBoxHeight, textFont);
+
+textBoxXVal = 150;
+textBoxYVal = 0;
+textBoxWidth = 600;
+textBoxHeight = 100;
+canText = false;
+
+goBackNum = 0;
+
+
+
+
+reverseLimit = 0;
+frameCount = 0;
+
+text = " ";
+
+ plat1XPos = 50000;
+  plat2XPos = 50000;
+  plat3XPos = 50000;
+
+
+
+canPrintPlat2 = false;
+canPrintPlat3 = false;
+
+canProgress = true;
+
+gamePos = 0;
+var char = new Image();
   
   
   char.width = 10;
   char.height = 10;
+canLoop = true;
+
+
+
  
 
   char.onload = function() {
-    context.drawImage(char, 10, 10, 10, 10, 100, 500, charWidth, charHeight);
+    context.drawImage(char, 10, 10, 10, 10, 100, 300, charWidth, charHeight);
   };
   context.beginPath();
   gameLoop();
@@ -107,27 +247,37 @@ function game() {
 function slowDownX()
 {
   if (xspeed > 0)
-    xspeed = xspeed - increment;
+    xspeed = xspeed - speedIncrement;
   if (xspeed < 0)
-    xspeed = xspeed + increment;
+    xspeed = xspeed + speedIncrement;
 }
 
 function slowDownY()
 {
   if (yspeed > 0)
-    yspeed = yspeed - increment;
+    yspeed = yspeed - speedIncrement;
   if (yspeed < 0)
-    yspeed = yspeed + increment;
+    yspeed = yspeed + speedIncrement;
 }
 
 
 
 function gameLoop()
 {
-  console.log("prog: " + prog);
+
+
+
   erase(plat1XPos, plat1YPos - 10, plat1Length, platWidth + 10); 
   erase(plat2XPos, plat2YPos - 10, plat2Length, platWidth + 10);
   erase(plat3XPos, plat3YPos - 10, plat3Length, platWidth + 10);
+  erase(firstPlatXPos, firstPlatYPos, firstPlatLength, platWidth);
+
+
+
+
+  if(dead)
+    goBack(); 
+ 
 
 
   
@@ -155,7 +305,11 @@ function gameLoop()
     if(ypos >= ymax) {
         ypos = ymax;
         yspeed -= yspeed;
+        text = "Go Back";
+        dead = true;
+        
     }
+
     if (ypos <= ymin) {
         ypos = ymin;
         yspeed -= yspeed;
@@ -181,28 +335,88 @@ function gameLoop()
     leftRight = 1;
   }
 
+  if (leftPressed == 0 && rightPressed == 0) {
+    if(xspeed != 0)
+      slowDownX();
+  }
+
+  
+
+  
+  if (stage == 1){
+  if(prog >= 0 && prog < 2650) {
+    backgroundPic = "images/background1.png";
+    if (backgroundSwitches == 0){
+    backgroundSwitches++;
+  }
+ 
+}
+  
+
+  if(prog >= 2650 && prog < 9000){
+    console.log("thing 2");
+    if(backgroundSwitches == 1){
+    
+      background2XPos = 2500;
+      
+      backgroundSwitches++;
+    }
+    
+      background2Pic = "images/background2.png";
+  }
+  else if (prog >= 9300 && prog < 14400) {
+    if(backgroundSwitches == 2) {
+      backgroundXPos = 1000;
+   
+      backgroundSwitches++;
+    }
+   
+      backgroundPic = "images/background3.png";
+  
+  }
+  else if (prog >= 14400 && prog < 19000) {
+    if(backgroundSwitches == 3) {
+      background2XPos = 1000;
+    
+      backgroundSwitches++;
+    }
+   
+      background2Pic = "images/background4.png";
+  }
+
+}
+
+
+
+  drawBackground(0);
+
+  if(prog >= 2650)
+  drawBackground(1);
+
+
+
+  SolidPlatform("images/SolidPlatform.png", firstPlatXPos, firstPlatYPos, firstPlatLength, platWidth);
+ 
     
 
    randomPlat(200);
   
-    drawRandomPlat1(plat1XPos, plat1YPos, plat1Length); //need to make it so that plat type doesn't change with the next plat
-    console.log("plat1xpos: " + plat1XPos + "plat1YPos: " + plat1YPos + "plat1Length: " + plat1Length);
+    drawRandomPlat1(plat1XPos, plat1YPos, plat1Length); 
+  
   if (canPrintPlat2 == true)
     drawRandomPlat2(plat2XPos, plat2YPos, plat2Length);
-  console.log("plat2xpos: " + plat2XPos + "plat2YPos: " + plat2YPos + "plat2Length: " + plat2Length);
+  
   if (canPrintPlat3 == true)
     drawRandomPlat3(plat3XPos, plat3YPos, plat3Length);
-  console.log("plat3xpos: " + plat3XPos + "plat3YPos: " + plat3YPos + "plat3Length: " + plat3Length);
+  
+  eraseText();
 
-  textBox("Hello World", 350, 0, 300, 100, "30px Times");
+  textSwitching();
+  
 
-  if(prog > 200) {
-    eraseText();
-  }
-  if(prog > 200){
-    console.log("new stuff triggered");
-    textBox("new stuff", 350, 0, 300, 100, "30px Times");
-  }
+  textBox(text, textBoxXVal, textBoxYVal, textBoxWidth, textBoxHeight, textFont);
+
+
 
 
 
@@ -212,6 +426,7 @@ function gameLoop()
 
  
   moveChar();
+  console.log(prog);
   
 
    
@@ -231,16 +446,40 @@ function gameLoop()
   if (leftPressed == 0 && rightPressed == 0)
      slowDownX();
 
-   // console.log("ypos: " + ypos);
-   // console.log("xpos: " + xpos);
+  
 
-  console.log("progressNum: " + progressNum);
-    
-  setTimeout("gameLoop()", 16 + (2/3));
+
+  if(canLoop)  
+    setTimeout("gameLoop()", 16 + (2/3));
 
 
 }
 
+function drawBackground(flip) {
+    if(flip == 0){
+    var background = new Image();
+    background.src = backgroundPic;
+    context.drawImage(background, backgroundXPos, backgroundYPos, backgroundWidth, backgroundHeight);
+  }
+  else {
+    var background2 = new Image();
+    background2.src = background2Pic;
+    context.drawImage(background2, background2XPos, backgroundYPos, backgroundWidth, backgroundHeight)
+  }
+}
+
+function backgroundFlipper() {
+  if(backgroundFlip >= 1)
+    backgroundFlip = 0;
+  else
+    backgroundFlip++;
+
+}
+
+function changeBackground(newBack) {
+  backgroundPic = newBack;
+  backgroundXPos -= backgroundXPos;
+}
 
 
 function erase(xpos, ypos, width, height) {
@@ -302,19 +541,18 @@ function SolidPlatform(platform, dist, height, length, width) {
       
     }
     
+    
 
 
 
 }
 
 function progress(d) {
-
-  plat1XPos -= xspeed;
-  plat2XPos -= xspeed;
-  plat3XPos -= xspeed;
+  if(canProgress) {
+  progTogether();
   xspeed = Math.min(xspeed + increment, 1*maxSpeed);
-  progressNum += xspeed;
-  prog++;
+  prog+=xspeed;
+}
   
 
   
@@ -323,12 +561,23 @@ function progress(d) {
 }
 
 function antiProgress() {
+  
+  progTogether();
+  progressNum += xspeed;
+  xspeed = Math.max(xspeed - increment, -1*maxSpeed);
+  prog+=xspeed;
+   
+}
+
+function progTogether() {
   plat1XPos -= xspeed;
   plat2XPos -= xspeed;
   plat3XPos -= xspeed;
+  firstPlatXPos -= xspeed;
+  backgroundXPos -= xspeed;
+  background2XPos -= xspeed;
+  
   progressNum += xspeed;
-  xspeed = Math.max(xspeed - increment, -1*maxSpeed);
-   
 }
 
 
@@ -487,7 +736,7 @@ function randomPlat(freq) {
   platType = getRandomInt(1, 3); //1 = BIplat, 2 = hangrail, 3 = solidplat
   
   progressNum-=progressNum;
-  console.log("progressNum: " + progressNum);
+ 
 
   if(addPlat == 1) {
     platType1 = platType
@@ -498,7 +747,7 @@ function randomPlat(freq) {
   else if(addPlat == 2) {
     canPrintPlat2 = true;
     platType2 = platType;
-    console.log(canPrintPlat2);
+
     plat2XPos = platXPos;
     plat2YPos = platYPos;
     plat2Length = platLength;
@@ -506,7 +755,7 @@ function randomPlat(freq) {
   else if(addPlat == 3) {
     canPrintPlat3 = true;
     platType3 = platType;
-    console.log(canPrintPlat3);
+    
     plat3XPos = platXPos;
     plat3YPos = platYPos;
     plat3Length = platLength;
@@ -555,20 +804,93 @@ function textBox(text, xVal, yVal, width, height, font) {
   context.font = font;
   context.fillStyle = "#000000";
   context.rect(xVal, yVal, width, height);
+  context.fillStyle = "#ffffff";
+  context.fillRect(xVal, yVal, width, height);
+  context.fillStyle = "#000000";
   context.fillText(text, xVal, yVal + height*2/3);
   context.stroke();
+
   
 
 }
 
 function eraseText() {
   context.fillStyle = "#ffffff";
-  context.fillRect(350, 0, 1000, 1000);
+  context.fillRect(350, 0, 300, 100);
   context.stroke();
 
- 
-  
 }
+
+
+
+function goBack() {
+ 
+    
+
+
+  erase(plat1XPos, plat1YPos - 10, plat1Length, platWidth + 10); 
+  erase(plat2XPos, plat2YPos - 10, plat2Length, platWidth + 10);
+  erase(plat3XPos, plat3YPos - 10, plat3Length, platWidth + 10);
+  erase(firstPlatXPos, firstPlatYPos, firstPlatLength, 10);
+  stage = 1;
+
+
+
+ 
+
+ backgroundSwitches = 0;
+
+
+
+
+
+  
+  //eraseText();
+
+  erase(xpos, ypos, charWidth, charHeight);
+
+  canLoop = false;
+
+  setTimeout("game()", 3000);
+
+}
+
+function textSwitching() {
+
+  if(!dead){
+    if(prog < 2000){
+      if (!isTooSlow)
+        text = "Alright, let's get going.";
+      setTimeout("tooSlow()", 3000);
+    }
+    
+    if(prog > 2000){
+     text = "new stuff"
+    }
+  }
+
+
+}
+
+function tooSlow() {
+  if(prog == 0) {
+    text = "Use the arrow keys to move around";
+    
+    isTooSlow = true;
+  }
+  else
+    isTooSlow = false;
+
+}
+
+
+
+
+
+
+
+
+
 
 
 
