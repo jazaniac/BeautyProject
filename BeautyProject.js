@@ -22,6 +22,12 @@ var prog = 0;
 
 var addPlat = 1;
 
+var endStage1Val = 0;
+
+var doRandom;
+
+var tryAgainXVal = 300;
+
 var platType1;
 var platType2;
 var platType3;
@@ -55,15 +61,16 @@ var firstPlatXPos = 0;
 var firstPlatYPos = 480 + charHeight;
 var firstPlatLength = 2000;
 
-var backgroundXPos;
-var backgroundYPos;
-var backgroundWidth;
-var backgroundHeight;
-var backgroundPic;
+
+var backgroundXPos = 0;
+var backgroundYPos = 0;
+var backgroundWidth = 5112.15;
+var backgroundHeight = 700;
 
 var background2XPos = 0;
 var background2YPos;
 var background2Pic;
+var background2Var;
 
 var backgroundSwitches = 0;
 
@@ -95,6 +102,8 @@ var canLoop = true;
 var dead = false;
 
 var stage = 1;
+
+var tryAgainExists;
 
 
 
@@ -132,6 +141,7 @@ function game() {
 
 
 
+endStage1Val = 0;
 
 dead = false;
 
@@ -157,7 +167,9 @@ prog = 0;
 
 addPlat = 1;
 
+doRandom = true;
 
+tryAgainXVal = 300;
 
 upPressed = 0;
 downPressed = 0;
@@ -184,10 +196,20 @@ firstPlatXPos = 0;
 firstPlatYPos = 480 + charHeight;
 firstPlatLength = 2000;
 
-backgroundXPos = 0;
-backgroundYPos = 0;
-backgroundWidth = 5112.15;
-backgroundHeight = 700;
+if (stage == 1) {
+  backgroundXPos = 0;
+  backgroundYPos = 0;
+  backgroundWidth = 5112.15;
+  backgroundHeight = 700;
+}
+else if (stage == 2) {
+  backgroundWidth = 2000;
+  backgroundheight = 700;
+}
+else if (stage == 3) {
+  backgroundWidth = 2400;
+  backgroundHeight = 700;
+}
 
 maxYRandomVar = 150; //for randomPlat
 
@@ -201,6 +223,8 @@ canText = false;
 
 goBackNum = 0;
 
+
+tryAgainExists = false;
 
 
 
@@ -264,6 +288,7 @@ function slowDownY()
 
 function gameLoop()
 {
+  
 
 
 
@@ -343,54 +368,18 @@ function gameLoop()
   
 
   
-  if (stage == 1){
-  if(prog >= 0 && prog < 2650) {
-    backgroundPic = "images/background1.png";
-    if (backgroundSwitches == 0){
-    backgroundSwitches++;
-  }
- 
-}
-  
-
-  if(prog >= 2650 && prog < 9000){
-    console.log("thing 2");
-    if(backgroundSwitches == 1){
-    
-      background2XPos = 2500;
-      
-      backgroundSwitches++;
-    }
-    
-      background2Pic = "images/background2.png";
-  }
-  else if (prog >= 9300 && prog < 14400) {
-    if(backgroundSwitches == 2) {
-      backgroundXPos = 1000;
-   
-      backgroundSwitches++;
-    }
-   
-      backgroundPic = "images/background3.png";
-  
-  }
-  else if (prog >= 14400 && prog < 19000) {
-    if(backgroundSwitches == 3) {
-      background2XPos = 1000;
-    
-      backgroundSwitches++;
-    }
-   
-      background2Pic = "images/background4.png";
-  }
-
-}
+  backgroundSwitch();
 
 
 
   drawBackground(0);
 
-  if(prog >= 2650)
+  if(stage == 1)
+    background2Var = 2650;
+  else if(stage == 2)
+    background2Var = 1000;
+
+  if(prog >= background2Var)
   drawBackground(1);
 
 
@@ -398,7 +387,7 @@ function gameLoop()
   SolidPlatform("images/SolidPlatform.png", firstPlatXPos, firstPlatYPos, firstPlatLength, platWidth);
  
     
-
+  if(doRandom)
    randomPlat(200);
   
     drawRandomPlat1(plat1XPos, plat1YPos, plat1Length); 
@@ -411,15 +400,12 @@ function gameLoop()
   
   eraseText();
 
-  textSwitching();
+ 
   
 
   textBox(text, textBoxXVal, textBoxYVal, textBoxWidth, textBoxHeight, textFont);
 
-
-
-
-
+  textSwitching();
    
   frameIncrease();
    
@@ -447,7 +433,8 @@ function gameLoop()
      slowDownX();
 
   
-
+  
+ 
 
   if(canLoop)  
     setTimeout("gameLoop()", 16 + (2/3));
@@ -576,6 +563,8 @@ function progTogether() {
   firstPlatXPos -= xspeed;
   backgroundXPos -= xspeed;
   background2XPos -= xspeed;
+  if(tryAgainExists)
+    tryAgainXVal -= xspeed;
   
   progressNum += xspeed;
 }
@@ -832,7 +821,7 @@ function goBack() {
   erase(plat2XPos, plat2YPos - 10, plat2Length, platWidth + 10);
   erase(plat3XPos, plat3YPos - 10, plat3Length, platWidth + 10);
   erase(firstPlatXPos, firstPlatYPos, firstPlatLength, 10);
-  stage = 1;
+  
 
 
 
@@ -858,15 +847,58 @@ function goBack() {
 function textSwitching() {
 
   if(!dead){
-    if(prog < 2000){
-      if (!isTooSlow)
-        text = "Alright, let's get going.";
-      setTimeout("tooSlow()", 3000);
+    if(stage == 1){
+      if(prog < 4830){
+        if (!isTooSlow)
+          text = "   Alright, let's get going.";
+        setTimeout("tooSlow()", 3000);
+      }
+      if(prog >= 4830 && prog < 9700){
+        text = "   Just have to keep going, can't lose focus."
+      }
+      else if(prog >= 9700 && prog < 12000){
+        text = "   C'mon, just get a few more pages in.";
+      }
+      else if(prog >= 12000 && prog < 15000){
+        text = "   Ah- wait, where was I? It was...";
+      }
+      else if(prog >= 15000 && prog < 17000){
+        text = "   Dammit.";
+      }
+      else if(prog >= 17000 && prog < 20000){
+        text = "   I'm not getting anywhere with this.";
+      }
+      else if(prog >= 1000){
+        text = "   Maybe I should try something else and come back to this later.";
+        endStage1();
+      }
     }
-    
-    if(prog > 2000){
-     text = "new stuff"
+    else if(stage == 2){
+      if(prog < 2000)
+        text = "    Well, this is different at least.";
+      if(prog >= 2000 && prog < 4000)
+        text = "    I'm not feeling very good, still.";
+      if(prog >= 4000 && prog < 6000)
+        text = "    I need to do something else, I'm just out of it.";
+      if(prog >= 6000) {
+        text = "    I'll come back to this later.";
+        endStage1();
+      }
     }
+    else if(stage == 3) {
+      if(prog < 1200)
+        text = "    Shit, I'm terrible at spanish.";
+      if(prog >= 1200 && prog < 2400)
+        text = "    What am I even doing here.";
+      if(prog >= 2400 && prog < 3600)
+        text = "    Alright, I'm done. I can't focus.";
+      if(prog >= 4000){
+        text = "    I'm just gonna try one more.";
+        endStage1();
+      }
+    }
+
+
   }
 
 
@@ -883,6 +915,175 @@ function tooSlow() {
 
 }
 
+function backgroundSwitch(){
+  console.log("stage: " + stage);
+  if (stage == 1){
+
+  if(prog >= 0 && prog < 2650) {
+    backgroundPic = "images/background1.png";
+    if (backgroundSwitches == 0){
+    backgroundSwitches++;
+   }
+ 
+  }
+  else if(prog >= 2650 && prog < 9000){
+    
+    if(backgroundSwitches == 1){
+    
+      background2XPos = 2500;
+      
+      backgroundSwitches++;
+    }
+    
+      background2Pic = "images/background2.png";
+  }
+  else if (prog >= 9300 && prog < 14400) {
+    if(backgroundSwitches == 2) {
+      backgroundXPos = 1000;
+   
+      backgroundSwitches++;
+    }
+   
+      backgroundPic = "images/background3.png";
+  
+  }
+  else if (prog >= 14400 && prog < 19000) {
+    if(backgroundSwitches == 3) {
+      background2XPos = 1000;
+    
+      backgroundSwitches++;
+    }
+   
+      background2Pic = "images/background4.png";
+  }
+  else if (prog >= 19000 && prog < 24000) {
+    if(backgroundSwitches == 4) {
+      backgroundXPos = 1000;
+    
+      backgroundSwitches++;
+    }
+   
+      backgroundPic = "images/background5.png";
+  }
+
+  }
+  else if(stage == 2) {
+    
+    if(prog >= 0 && prog < 1000) {
+    if (backgroundSwitches == 0){
+    backgroundSwitches++;
+    backgroundXPos = 0;
+   }
+    backgroundPic = "images/background6.png";
+    
+ 
+    }
+     else if(prog >= 1000 && prog < 3000){
+    
+    if(backgroundSwitches == 1){
+    
+      background2XPos = 1500;
+      
+      backgroundSwitches++;
+    }
+    
+      background2Pic = "images/background7.png";
+    }
+    else if (prog >= 3000 && prog < 5000) {
+       if(backgroundSwitches == 2) {
+       backgroundXPos = 1500;
+     
+        backgroundSwitches++;
+      }
+     
+        backgroundPic = "images/background8.png";
+  
+    }
+    else if (prog >= 5000 && prog < 7000) {
+      if(backgroundSwitches == 3) {
+        background2XPos = 1500;
+    
+        backgroundSwitches++;
+      }
+   
+        background2Pic = "images/background9.png";
+    }
+  }
+  else if (stage == 3) {
+     if(prog >= 0 && prog < 1400) {
+    if (backgroundSwitches == 0){
+    backgroundSwitches++;
+    backgroundXPos = 0;
+   }
+    backgroundPic = "images/background10.png";
+    
+ 
+    }
+     else if(prog >= 1400 && prog < 2700){
+    
+      if(backgroundSwitches == 1){
+    
+        background2XPos = 1000;
+      
+        backgroundSwitches++;
+      }
+    
+      background2Pic = "images/background11.png";
+    }
+    else if(prog >= 2700){
+
+      if(backgroundSwitches == 2){
+    
+        backgroundXPos = 1500;
+      
+        backgroundSwitches++;
+      }
+    
+      backgroundPic = "images/background12.png";
+    }
+
+  }
+}
+
+
+
+function endStage1() {
+  if(endStage1Val == 0) {
+   firstPlatXPos = 1000;
+   endStage1Val++;
+  }
+  doRandom = false;
+  if(firstPlatXPos <= -200) {
+  tryAgainExists = true;
+  tryAgain(100, 100, 600, 200);
+  if(tryAgainXVal < -400){
+    stage++;
+    dead = true;
+    
+  }
+  if(tryAgainXVal > 700) {
+    dead = true;
+  }
+
+}
+
+
+
+}
+
+function tryAgain(xval, yval, width, height) {
+  var rightArrow = new Image();
+  rightArrow.src = "images/Arrow-right.png";
+  var leftArrow = new Image();
+  leftArrow.src = "images/Arrow-left.png";
+  context.drawImage(leftArrow, xval, yval + height/2, width/4, height);
+  context.drawImage(rightArrow, xval + (3*width)/4, yval + height/2, width/4, height);
+  textBox("  Go left to try again.", xval + width/4, yval + height/2, width/2, height/3, "30px Times");
+  textBox("  Go right to move on.", xval + width/4, yval + height, width/2, height/3, "30px Times");
+
+}
+
+//function textBox(text, xVal, yVal, width, height, font) {
 
 
 
