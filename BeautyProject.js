@@ -845,7 +845,7 @@ function randomPlat(freq) {
   platXPos = getRandomInt(xpos + 200, xpos + 300) + 600;
  
 
-  platLength = getRandomInt(300, 800);
+  platLength = getRandomInt(300, 1200);
   
   
   platYPos = getRandomInt(maxYRandom, 550);
