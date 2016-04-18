@@ -17,6 +17,8 @@ var charWidth = 100;
 
 var gravity = .15 * increment;
 
+var done;
+
 var progressNum = 0;
 var prog = 0;
 
@@ -50,21 +52,21 @@ var platWidth = 20;
 var platType;
 
 var plat1XPos = 0;
-var plat1YPos = 500;
+var plat1YPos = 550;
 var plat1Length = 400;
 
 var backgroundFlip = 0; 
 
 var plat2XPos = 0;
-var plat2YPos = 500;
+var plat2YPos = 550;
 var plat2Length = 1;
 
 var plat3XPos = 0;
-var plat3YPos = 500;
+var plat3YPos = 550;
 var plat3Length = 1;
 
 var firstPlatXPos = 0;
-var firstPlatYPos = 480 + charHeight;
+var firstPlatYPos = 280 + charHeight;
 var firstPlatLength = 2000;
 
 
@@ -108,7 +110,7 @@ var canLoop = true;
 
 var dead = false;
 
-var stage = 3;
+var stage = 1;
 
 var tryAgainExists;
 
@@ -125,7 +127,7 @@ var canvas;
 var context;
 
 var char = new Image();
-char.src = "images/FinalJacqueSprite.png";
+char.src = "images/FinalJakeSprite.png";
 
 
 //570 * 270
@@ -150,7 +152,7 @@ function game() {
   erase(plat3XPos, plat3YPos - 10, plat3Length, platWidth + 10);
   erase(firstPlatXPos, firstPlatYPos, firstPlatLength + 1000, 10);
 
-
+done = false;
 
 endStage1Val = 0;
 
@@ -208,7 +210,7 @@ plat3Length = 1;
 
 
 
-firstPlatYPos = 480 + charHeight;
+firstPlatYPos = 280 + charHeight;
 firstPlatLength = 2000;
 
 backgroundXPos = 0;
@@ -339,6 +341,9 @@ function gameLoop()
 
     goBack(); 
   }
+
+  if(done)
+    reset();
  
 
 
@@ -421,8 +426,17 @@ function gameLoop()
   SolidPlatform("images/SolidPlatform.png", firstPlatXPos, firstPlatYPos, firstPlatLength, platWidth);
  
     
-  if(doRandom)
-   randomPlat(200);
+  if(doRandom) {
+    if(stage == 1)
+      randomPlat(200);
+    else if(stage == 2)
+      randomPlat(250);
+    else if(stage == 3)
+      randomPlat(300);
+    else if(stage == 4)
+      randomPlat(250);
+
+ }
   
     drawRandomPlat1(plat1XPos, plat1YPos, plat1Length); 
   
@@ -961,7 +975,7 @@ function goBack() {
 //fadeOutRectangle(x, y, w, h, r, g, b)
 
 function textFade(r, g, b) {
-  console.log("textFade");
+  
   if (textCheck != text) {
   fadeInRectangle(textBoxXVal, textBoxYVal, textBoxWidth, textBoxHeight, r, g, b);
   context.fillText(text, textBoxXVal, textBoxYVal + textBoxHeight*2/3);
@@ -983,7 +997,7 @@ function textSwitching() {
         setTimeout("tooSlow()", 3000);
       }
       if(prog >= 2400 && prog < 4830){
-        text = "   I Just have to keep pushing forward, I can't lose focus.";
+        text = "   I just have to keep pushing forward, I can't lose focus.";
       }
       else if(prog >= 4830 && prog < 7700){
         text = "   I wonder what the most common ceiling color is?";
@@ -1011,23 +1025,23 @@ function textSwitching() {
       else if(prog >= 20000 && prog < 21500)
         text = "    Alright, I need to calm down. It's not my fault.";
       else if(prog >= 21500){
-        text = "   Maybe I should try something else, try reading again later.";
+        text = "   Maybe I should do something else, try reading again later.";
         endStage1();
       }
     }
     else if(stage == 2){
       if(prog < 2000)
-        text = "    Well, this is different I guess.";
+        text = "    Well, this is different, I guess.";
       if(prog >= 2000 && prog < 3700)
         text = "    I still can't pay attention.";
       if(prog >= 3700 && prog < 3800)
-        text = "    Why am I so fucking stupid";
+        text = "    Why am I so fucking stupid?";
       if(prog >= 3800 && prog < 3900)
-        text = "    I'm such an idiot";
+        text = "    I'm such an idiot.";
       if(prog >= 3900 && prog < 4000)
-        text = "    I should just fucking quit";
+        text = "    I should just fucking quit.";
       if(prog >= 4000 && prog < 6000)
-        text = "    I need to do something else, I keep spacing out";
+        text = "    I need to do something else, I keep spacing out.";
       if(prog >= 6000) {
         text = "    I'll come back to this later.";
         endStage1();
@@ -1041,17 +1055,17 @@ function textSwitching() {
       if(prog >= 2400 && prog < 3600)
         text = "    If I couldn't focus on math, why did I think I could focus on spanish?";
       if(prog >= 4000){
-        text = "    I'm just gonna try one more.";
+        text = "    I'm just gonna try the last subject I've got left.";
         endStage1();
       }
     }
     else if(stage == 4) { //max is 7880
       if(prog < 1200)
-        text = "    Fuck, why can't I ever pay attention to anything.";
+        text = "    Why can't I ever pay attention to anything.";
       if(prog >= 1200 && prog < 2400)
-        text = "    It's not even that they're uninteresting, I just can't focus.";
+        text = "    It's not even that I'm uninterested, I just can't focus.";
       if(prog >= 3600 && prog < 4800)
-        text = "    Huh, this isn't bad actually. I'm making progress";
+        text = "    Huh, this isn't bad. I'm actually enjoying myself.";
       if(prog >= 4800 && prog < 6000)
         text = "    Maybe I could do this more, sometimes.";
       if(prog >= 6000 && prog < 7200)
@@ -1060,8 +1074,7 @@ function textSwitching() {
         text = "    That'd be nice. "
         canProgress = false;
         if(xpos >= 1000) {
-          fadeInRectangle(0, 0, 1000, 1000, 120, 120, 120);
-          canLoop = false;
+          endStage2();
         }
 
       }
@@ -1083,7 +1096,7 @@ function tooSlow() {
 }
 
 function backgroundSwitch(){
-  console.log("stage: " + stage);
+ 
   if (stage == 1){
 
   if(prog >= 0 && prog < 2650) {
@@ -1292,7 +1305,7 @@ function endStage1() {
         if(xpos >= 1000) {
           stage++;
      if (stage == 2)
-        text = "    Guess I'll try some Math.";
+        text = "    Guess I'll do Math.";
       if (stage == 3)
        text = "    I've still got some Spanish, I guess.";
       if (stage == 4)
@@ -1305,6 +1318,26 @@ function endStage1() {
 
     
   }
+  if(xpos < 0) {
+    dead = true;
+  }
+
+}
+}
+
+function endStage2() {
+  doRandom = false;
+  if(firstPlatXPos <= -200) {
+  tryAgainExists = true;
+ 
+  canProgress = false;
+      if(xpos >= 1000) {
+          stage = 1;
+        text = "    That'd be nice. ";
+
+      dead = true;
+        }
+  
   if(xpos < 0) {
     dead = true;
   }
@@ -1355,6 +1388,8 @@ function fadeInRectangleWithFrames(x, y, w, h, r, g, b) {
            
        
 }
+
+
 
 //function textBox(text, xVal, yVal, width, height, font) {
 
